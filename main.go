@@ -1,8 +1,10 @@
 package main
 
 import (
+	"errors"
 	"flag"
 	"fmt"
+	"io/fs"
 	"os"
 	"os/exec"
 	"path"
@@ -42,6 +44,11 @@ func main() {
 		filename = path.Join(curDir, "certs", fmt.Sprintf("%s.cert", *a))
 	case *fn != "":
 		filename = *fn
+	}
+
+	if _, err := os.Stat(filename); errors.Is(err, fs.ErrNotExist) {
+		fmt.Printf("The cert file %s doesn't exist", filename)
+		os.Exit(3)
 	}
 
 	fmt.Println("Filename: ", filename)
